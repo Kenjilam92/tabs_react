@@ -2,39 +2,50 @@ import React, {useState} from 'react';
 import GroupButton from './Components/groupButton';
 import 'bootstrap/dist/css/bootstrap.min.css'
 function App() {
-  const [tab1,setTab1]=useState(true);
-  const [tab2,setTab2]=useState(true);
-  const [tab3,setTab3]=useState(true);
-  const [text1,setText1]=useState("");
-  const [text2,setText2]=useState("");
-  const [text3,setText3]=useState("");
-  const switchTextbox = e => {
-    // let temp = (e.target.hidden) ? false : true
-    // alert (`${e.target.innerHTML}, Hidden: ${e.target.hidden}, Switch to: ${temp} `)
-    if (e.target.innerHTML === "Tab1"){
-      setTab1(false);
-      setTab2(true);
-      setTab3(true);
-    }
-    else if (e.target.innerHTML === "Tab2"){
-      setTab1(true);
-      setTab2(false);
-      setTab3(true);
-    }
-    else if (e.target.innerHTML === "Tab3"){
-      setTab1(true);
-      setTab2(true);
-      setTab3(false);
-    }
+  const [removeNumber,setRemovenumber]=useState(null);
+  const [tabslist,setTablist]=useState([
+    {status: false, details: ""},
+    {status: true, details: ""},
+    {status: true, details: ""}
+  ])
+  const addTab = () =>{
+    const newTab = {status: true, details: ""};
+    setTablist([...tabslist,newTab]);
   }
-  const arr = [
-    {status:tab1, show: setTab1, details: text1, change: setText1},
-    {status:tab2, show: setTab2, details: text2, change: setText2},
-    {status:tab3, show: setTab3, details: text3, change: setText3}
-  ]
+  const updateText = (v,i) => {
+    const temp = [...tabslist]
+    temp[i].details=v;
+    setTablist(temp)
+  }
+
+  const switchTextbox = i => {
+    const temp = [...tabslist]
+    for (let j=0;j<temp.length;j++){
+      temp[j].status=true;
+    } 
+      temp[i].status=false;
+    setTablist(temp)
+  }
+  const remove = (e) =>{
+    e.preventDefault()
+    if (removeNumber >=0){
+      const temp = [...tabslist]
+      const tempNum= removeNumber-1;
+      temp.splice(tempNum,1);
+      setTablist(temp)
+    }
+    setRemovenumber(null);
+  }
 
   return (
-    <GroupButton list={arr} handleButton={switchTextbox}/>
+  <div className="container">
+    <GroupButton list={tabslist} handleButton={switchTextbox} addTabClicked={addTab} typingText={updateText}/>
+    <form className="contanner jumbotron d-flex flex-column" onSubmit={e=>remove(e)}> 
+      <label htmlFor="remove">Which tab do you want to remove?</label>
+      <input type="number" value={removeNumber} onChange={e=>setRemovenumber(e.target.value)}/>
+      <button className="btn btn-danger" type="submit" >Remove</button>
+    </form>
+  </div>
   );
 }
 
